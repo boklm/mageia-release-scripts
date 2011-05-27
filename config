@@ -1,0 +1,4 @@
+NEW_RELEASE=1
+PKG_SVN=svn+ssh://svn.mageia.org/svn/test/packages/cauldron
+BIN_SVN=svn+ssh://svn.mageia.org/svn/test/binrepos/cauldron
+MIRROR_DIR=/distrib/test/mirror
