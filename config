@@ -2,3 +2,8 @@ NEW_RELEASE=1
 PKG_SVN=svn+ssh://svn.mageia.org/svn/test/packages/cauldron
 BIN_SVN=svn+ssh://svn.mageia.org/svn/test/binrepos/cauldron
 MIRROR_DIR=/distrib/test/mirror
+DISTRIB_DIR="$MIRROR_DIR/distrib"
+
+CAULDRON_MIRROR_DIR="$DISTRIB_DIR/cauldron"
+NEW_RELEASE_MIRROR_DIR="$DISTRIB_DIR/$NEW_RELEASE"
+NEW_RELEASE_TMP_DIR="$DISTRIB_DIR/.tmp-release-$NEW_RELEASE"
