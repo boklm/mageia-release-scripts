@@ -1,0 +1,61 @@
+#!/bin/env perl
+
+# $Id$
+
+use strict;
+use warnings;
+use Pod::Usage;
+use Getopt::Long;
+use MDV::Distribconf;
+use Cwd;
+
+GetOptions(
+) or pod2usage(1);
+
+my ($source,$dest) = @ARGV;
+
+$dest or do {
+    warn "No dest given";
+    pod2usage(1);
+};
+
+# Constant:
+
+{
+    my @distribdir = find_distrib($source);
+    warn join(' ', @distribdir);
+    fork_tree($source, $dest);
+}
+
+sub find_distrib {
+    my ($topdir) = @_;
+    my @distpath;
+    if (opendir(my $handle, $topdir)) {
+        while (my $subdir = readdir($handle)) {
+            $subdir eq '..' and next;
+            my $d = MDV::Distribconf->new("$topdir/$subdir");
+            if ($d->load){
+                push(@distpath, $subdir);
+            }
+        }
+        closedir($handle)
+    } else {
+        die "Cannot open $topdir: $!";
+    }
+    return @distpath;
+}
+
+sub fork_tree {
+    my ($source, $dest) = @_;
+
+    my $abs_source = Cwd::abs_path($source) || $source;
+    my $abs_dest   = Cwd::abs_path($dest) || $dest;
+
+    my @basecmd = (qw(rsync -avPHS), ("$abs_source/"), ("$abs_dest/"));
+    my @cmd;
+
+    @cmd = (@basecmd, qw(--exclude *.rpm));
+    system(@cmd);
+    @cmd = (@basecmd, '--link-dest', "$abs_source/");
+    system(@cmd);
+}
