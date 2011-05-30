@@ -1,7 +1,9 @@
 
 * Forking cauldron tree
 
- update mageia-release and lsb-release for the new version
+ update mageia-release and lsb-release for the new version. Then rebuild
+ drakx-installer-binaries, drakx-installer-images, drakx-installer-rescue,
+ drakx-installer-stage2.
 
  fork the cauldron tree to the new release tree :
  valstar# ./fork-distribution /distrib/mirror/distrib/cauldron /distrib/newrelease/1
