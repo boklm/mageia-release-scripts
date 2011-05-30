@@ -1,7 +1,8 @@
 
 * Forking cauldron tree
 
- When mageia-release and lsb-release have been updated for the new release,
+ update mageia-release and lsb-release for the new version
+
  fork the cauldron tree to the new release tree :
  valstar# ./fork-distribution /distrib/mirror/distrib/cauldron /distrib/newrelease/1
 
@@ -13,4 +14,15 @@
  Edit media.cfg for x86_64 and i586 :
   - check version
   - update branch to Official
+ 
+ update VERSION file for x86_64 and i586 :
+  - /distrib/newrelease/1/x86_65/VERSION
+  - /distrib/newrelease/1/i586/VERSION
+ (replace Devel with Official)
+ 
+ extract mageia-release-Default package on x86_64 and i586 to copy
+ the file product.id.Default as product.id at the root of x86_64 and
+ i586 trees 
+
+ submit new mageia-release and lsb-release, updated to cauldron
 
