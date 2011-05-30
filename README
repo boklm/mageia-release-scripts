@@ -1,0 +1,16 @@
+
+* Forking cauldron tree
+
+ When mageia-release and lsb-release have been updated for the new release,
+ fork the cauldron tree to the new release tree :
+ valstar# ./fork-distribution /distrib/mirror/distrib/cauldron /distrib/newrelease/1
+
+ Do the same on rabbit (to avoid downloading everything) :
+ rabbit# ./fork-distribution /distrib/mirror/distrib/cauldron /distrib/newrelease/1
+
+ clean testing repositories
+
+ Edit media.cfg for x86_64 and i586 :
+  - check version
+  - update branch to Official
+
