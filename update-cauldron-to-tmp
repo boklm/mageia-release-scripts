@@ -1,7 +1,0 @@
-#!/bin/sh
-
-SCRIPTSDIR=$(dirname $0)
-. $SCRIPTSDIR/config
-
-RSYNC_OPTIONS="-avH --delete-after -S"
-rsync $RSYNC_OPTIONS "$CAULDRON_MIRROR_DIR/" "$NEW_RELEASE_TMP_DIR"
