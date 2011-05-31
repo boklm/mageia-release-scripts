@@ -1,9 +1,14 @@
 NEW_RELEASE=1
-PKG_SVN=svn+ssh://svn.mageia.org/svn/test/packages/cauldron
-BIN_SVN=svn+ssh://svn.mageia.org/svn/test/binrepos/cauldron
+PKG_SVN=file:///svn/test/packages/cauldron
+BIN_SVN=file:///svn/test/binrepos/cauldron
 MIRROR_DIR=/distrib/test/mirror
+COMMIT_USER=schedbot
+
 DISTRIB_DIR="$MIRROR_DIR/distrib"
+NEW_RELEASE_TMP_DIR=/distrib/newrelease/$NEW_RELEASE
+SRPMS_CORE_DIR=$NEW_RELEASE_TMP_DIR/SRPMS/core/release
+SRPMS_NONFREE_DIR=$NEW_RELEASE_TMP_DIR/SRPMS/nonfree/release
+SRPMS_TAINTED_DIR=$NEW_RELEASE_TMP_DIR/SRPMS/tainted/release
 
 CAULDRON_MIRROR_DIR="$DISTRIB_DIR/cauldron"
 NEW_RELEASE_MIRROR_DIR="$DISTRIB_DIR/$NEW_RELEASE"
-NEW_RELEASE_TMP_DIR="$DISTRIB_DIR/.tmp-release-$NEW_RELEASE"
