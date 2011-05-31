@@ -28,3 +28,15 @@
 
  submit new mageia-release and lsb-release, updated to cauldron
 
+
+* Signing ISOs
+
+ Signature of ISOs is done on rabbit, using the account "releasekey", and
+ the script /usr/local/bin/sign_checksums. Make sure the directories
+ containing the ISOs are owned by group releasekey, and group can write
+ in the directory. Then run the script sign_checksums on the directories :
+ rabbit# su - releasekey
+ rabbit$ for dir in /home/bcd/public_html/isos/official/mageia-*
+         do sign_checksums $dir
+	 done
+
