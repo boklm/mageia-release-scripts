@@ -1,6 +1,6 @@
 NEW_RELEASE=1
-PKG_SVN=file:///svn/test/packages/cauldron
-BIN_SVN=file:///svn/test/binrepos/cauldron
+PKG_SVN=file:///svn/packages/cauldron
+BIN_SVN=file:///svn/binrepos/cauldron
 MIRROR_DIR=/distrib/mirror
 COMMIT_USER=schedbot
 
