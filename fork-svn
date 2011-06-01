@@ -21,10 +21,10 @@ function create_branch()
 	( echo "$pkgname not found on $svn_url" 2>/dev/null >&2 && return 1 )
     branch_url="$svn_url/$pkgname/branches"
     $svn info "$branch_url" 2>/dev/null >&2 \
-    	|| $svn mkdir -m "SILENT creating branches directory" "$branch_url"
+    	|| $svn mkdir -m "SILENT: creating branches directory" "$branch_url"
     branch_url="$svn_url/$pkgname/branches/$NEW_RELEASE"
     $svn info "$branch_url" 2>/dev/null >&2 \
-    	|| $svn cp -m "Mageia Release $NEW_RELEASE" "$pkg_url" "$branch_url"
+    	|| $svn cp -m "SILENT: Mageia Release $NEW_RELEASE" "$pkg_url" "$branch_url"
 }
 
 for srpm in $SRPMS_CORE_DIR/*.src.rpm $SRPMS_NONFREE_DIR/*.src.rpm $SRPMS_TAINTED_DIR/*.src.rpm
