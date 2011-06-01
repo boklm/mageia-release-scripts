@@ -17,7 +17,7 @@ function create_branch()
 	return
     fi
     pkg_url="$svn_url/$pkgname/$copy_dir"
-    $svn info "$pkg_url" || \
+    $svn info "$pkg_url" 2>/dev/null >&2 || \
 	( echo "$pkgname not found on $svn_url" 2>/dev/null >&2 && return 1 )
     branch_url="$svn_url/$pkgname/branches"
     $svn info "$branch_url" 2>/dev/null >&2 \
