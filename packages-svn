@@ -1,0 +1,81 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use SVN::Core;
+use SVN::Ra;
+use Data::Dumper;
+
+# autoflush output
+$| = 1;
+
+my $repo_url = 'svn://svn.mageia.org/svn/packages';
+
+sub path_rev
+{
+    my ($ra, $path) = @_;
+    if ($ra->check_path($path, $SVN::Core::INVALID_REVNUM)
+	== $SVN::Node::none) {
+	return 0;
+    } else {
+	return ($ra->get_dir($path,
+	    $SVN::Core::INVALID_REVNUM))[2]{'svn:entry:committed-rev'};
+    }
+}
+
+sub package_revs
+{
+    my ($ra, $pkgname) = @_;
+
+    (
+	path_rev($ra, "cauldron/$pkgname/current"),
+	path_rev($ra, "cauldron/$pkgname/pristine"),
+    )
+}
+
+sub package_diff
+{
+    my $pkgname = shift;
+    my $ctx = SVN::Client->new();
+    print '-' x 67, "\n";
+    print "- $pkgname -", '-' x (63 - length $pkgname), "\n";
+    print '-' x 67, "\n\n";
+    print "svn diff $pkgname/pristine $pkgname/current\n";
+    $ctx->diff([], "$repo_url/cauldron/$pkgname/pristine", 'HEAD', 
+	"$repo_url/cauldron/$pkgname/current", 'HEAD', 1, 0, 0,
+	\*STDOUT, \*STDOUT);
+}
+
+sub modified_packages
+{
+    my ($pkg_list) = @_;
+    my $ra = SVN::Ra->new($repo_url);
+    my %modpkg;
+
+    for my $pkg (@$pkg_list) {
+	my @revs = package_revs($ra, $pkg);
+	if ($revs[0] > $revs[1]) {
+	    $modpkg{$pkg} = \@revs;
+	}
+    }
+    \%modpkg;
+}
+
+sub list_cauldron_packages
+{
+    my $ctx = SVN::Client->new();
+    my @l = keys $ctx->ls("$repo_url/cauldron", 'HEAD', 0);
+    \@l;
+}
+
+my $modpkg = modified_packages(list_cauldron_packages());
+
+print join "\n", sort keys %$modpkg;
+print "\n\n";
+for my $pkg (sort keys %$modpkg) {
+    if ($modpkg->{$pkg}[0] && $modpkg->{$pkg}[1]) {
+	package_diff($pkg);
+	print "\n\n\n";
+    }
+}
+
