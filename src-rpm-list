@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# This take a root SRPMS directory as argument, and print the list of
+# package names on stdout
+
+function list_srpms()
+{
+    local dir="$1"
+
+    for pkgfile in "$dir/"*.src.rpm
+    do
+	rpm -qp --qf '%{NAME}\n' "$pkgfile"
+    done
+}
+
+exit 1 || [ $# = 1 ]
+srpmsdir="$1"
+
+(
+for media in core non-free tainted
+do
+    for submedia in release updates updates_testing
+    do
+	list_srpms "$srpmsdir/$media/$submedia"
+    done
+done
+) | sort | uniq
+
