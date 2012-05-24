@@ -1,25 +1,38 @@
-#!/bin/sh
+#!/usr/bin/perl -w
 
-# This take a root SRPMS directory as argument, and print the list of
-# package names on stdout
+# This script takes a root SRPMS directory as argument, and print the
+# list of package names on stdout
 
-function list_srpms()
+use strict;
+use URPM;
+use Data::Dump qw/dump/;
+
+sub list_pkgnames
 {
-    local dir="$1"
-
-    urpmf --distrib "$dir" --qf '%name' .
+    my ($synthesis_file, $res) = @_;
+    my $urpm = new URPM;
+    $urpm->parse_synthesis($synthesis_file);
+    $urpm->traverse(
+	sub {
+	    $res->{$_[0]->name()} = 1;
+	}
+    );
 }
 
-[ $# -eq 1 ] || exit 1
-srpmsdir="$1"
+exit 1 unless @ARGV == 1;
+my $srpmsdir = $ARGV[0];
+my @medias = qw/core nonfree tainted/;
+my @submedias = qw/release updates updates_testing/;
 
-(
-for media in core non-free tainted
-do
-    for submedia in release updates updates_testing
-    do
-	list_srpms "$srpmsdir/$media/$submedia"
-    done
-done
-) | sort | uniq
+my %res;
+for my $media (@medias) {
+    for my $submedia (@submedias) {
+	list_pkgnames("$srpmsdir/$media/$submedia/media_info/synthesis.hdlist.cz",
+	    \%res);
+    }
+}
+
+for my $pkg (sort keys %res) {
+    print $pkg, "\n";
+}
 
