@@ -4,6 +4,7 @@ use strict;
 
 use SVN::Core;
 use SVN::Ra;
+use MDK::Common;
 use Data::Dumper;
 
 # autoflush output
@@ -68,14 +69,42 @@ sub list_cauldron_packages
     \@l;
 }
 
-my $modpkg = modified_packages(list_cauldron_packages());
+sub list_from_file
+{
+    my @res = cat_($_[0]);
+    chomp @res;
+    return @res;
+}
 
-print join "\n", sort keys %$modpkg;
-print "\n\n";
-for my $pkg (sort keys %$modpkg) {
-    if ($modpkg->{$pkg}[0] && $modpkg->{$pkg}[1]) {
-	package_diff($pkg);
-	print "\n\n\n";
+sub print_branch_packages
+{
+    my ($distrorelease, $pkglist) = @_;
+    my $ra = SVN::Ra->new($repo_url);
+    for my $pkgname (@$pkglist) {
+	my $rev = path_rev($ra, "cauldron/$pkgname/pristine");
+	print "cp $repo_url/cauldron/$pkgname\@$rev ",
+		"$repo_url/updates/$distrorelease/$pkgname \\\n",
+
     }
 }
 
+sub print_modified_packages
+{
+    my ($pkglist) = @_;
+
+    my $modpkg = modified_packages(@$pkglist);
+
+    print join "\n", sort keys %$modpkg;
+    print "\n\n";
+    for my $pkg (sort keys %$modpkg) {
+	if ($modpkg->{$pkg}[0] && $modpkg->{$pkg}[1]) {
+	    package_diff($pkg);
+	    print "\n\n\n";
+	}
+    }
+}
+
+my $packages_list_file = $ARGV[0];
+my @packages_list = list_from_file($packages_list_file);
+print_branch_packages('2', \@packages_list);
+#print_modified_packages(\@packages_list);
