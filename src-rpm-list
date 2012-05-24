@@ -10,7 +10,7 @@ function list_srpms()
     urpmf --distrib "$dir" --qf '%name' .
 }
 
-exit 1 || [ $# = 1 ]
+[ $# -eq 1 ] || exit 1
 srpmsdir="$1"
 
 (
