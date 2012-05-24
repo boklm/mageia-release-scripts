@@ -5,34 +5,16 @@
 
 use strict;
 use URPM;
-use Data::Dump qw/dump/;
 
-sub list_pkgnames
-{
-    my ($synthesis_file, $res) = @_;
-    my $urpm = new URPM;
-    $urpm->parse_synthesis($synthesis_file);
-    $urpm->traverse(
-	sub {
-	    $res->{$_[0]->name()} = 1;
-	}
-    );
+my $srpmsdir = $ARGV[0] or exit 1;
+
+my $urpm = URPM->new;
+
+foreach (glob("$srpmsdir/*/*/media_info/synthesis.hdlist.cz")) {
+    $urpm->parse_synthesis($_);
 }
-
-exit 1 unless @ARGV == 1;
-my $srpmsdir = $ARGV[0];
-my @medias = qw/core nonfree tainted/;
-my @submedias = qw/release updates updates_testing/;
 
 my %res;
-for my $media (@medias) {
-    for my $submedia (@submedias) {
-	list_pkgnames("$srpmsdir/$media/$submedia/media_info/synthesis.hdlist.cz",
-	    \%res);
-    }
-}
+$urpm->traverse(sub { $res{$_[0]->name} = 1 });
 
-for my $pkg (sort keys %res) {
-    print $pkg, "\n";
-}
-
+print join("\n", sort(keys %res), '')
