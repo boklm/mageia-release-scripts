@@ -7,10 +7,7 @@ function list_srpms()
 {
     local dir="$1"
 
-    for pkgfile in "$dir/"*.src.rpm
-    do
-	rpm -qp --qf '%{NAME}\n' "$pkgfile"
-    done
+    urpmf --distrib "$dir" --qf '%name' .
 }
 
 exit 1 || [ $# = 1 ]
