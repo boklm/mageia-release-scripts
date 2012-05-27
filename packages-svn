@@ -82,8 +82,9 @@ sub print_branch_packages
     my $ra = SVN::Ra->new($repo_url);
     for my $pkgname (@$pkglist) {
 	my $rev = path_rev($ra, "cauldron/$pkgname/pristine");
-	print "cp $repo_url/cauldron/$pkgname\@$rev ",
-		"$repo_url/updates/$distrorelease/$pkgname \\\n",
+	print "echo Branching package $pkgname\n";
+	print "svn cp -m 'SILENT: Branching $pkgname at revision $rev for Mageia $distrorelease' $repo_url/cauldron/$pkgname\@$rev ",
+		"$repo_url/updates/$distrorelease/$pkgname \n",
 
     }
 }
