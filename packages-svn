@@ -10,7 +10,7 @@ use Data::Dumper;
 # autoflush output
 $| = 1;
 
-my $repo_url = 'svn://svn.mageia.org/svn/packages';
+my $repo_url = 'file:///svn/packages';
 
 sub path_rev
 {
