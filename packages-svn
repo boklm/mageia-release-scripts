@@ -65,7 +65,7 @@ sub modified_packages
 sub list_cauldron_packages
 {
     my $ctx = SVN::Client->new();
-    my @l = keys $ctx->ls("$repo_url/cauldron", 'HEAD', 0);
+    my @l = keys %{{$ctx->ls("$repo_url/cauldron", 'HEAD', 0)}};
     \@l;
 }
 
