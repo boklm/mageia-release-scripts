@@ -2,7 +2,6 @@
 
 use strict;
 use File::Temp qw(tempfile);
-use RPM4;
 use Youri::Package::RPM::Updater;
 use LWP::UserAgent;
 use MDK::Common;
