@@ -18,9 +18,7 @@ print $ci_fh $commit_msg;
 close $ci_fh;
 
 sub list_from_file {
-    my @res = cat_($_[0]);
-    chomp @res;
-    return @res;
+    chomp_(cat_($_[0]));
 }
 
 sub get_bs_queue_todo() {
@@ -50,13 +48,8 @@ sub submit_package {
     system('mgarepo', 'submit', $pkgname);
 }
 
-sub rebuild_package {
-    my ($pkgname) = @_;
-    bump_release $pkgname;
-    submit_package $pkgname;
-}
-
 my @packages_list = list_from_file($ARGV[0]);
 foreach (@packages_list) {
-    rebuild_package($_);
+    bump_release($_);
+    submit_package($_);
 }
