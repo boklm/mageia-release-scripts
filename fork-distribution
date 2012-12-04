@@ -12,7 +12,7 @@ use Cwd;
 GetOptions(
 ) or pod2usage(1);
 
-my ($source,$dest) = @ARGV;
+my ($source, $dest) = @ARGV;
 
 $dest or do {
     warn "No dest given";
@@ -34,11 +34,11 @@ sub find_distrib {
         while (my $subdir = readdir($handle)) {
             $subdir eq '..' and next;
             my $d = MDV::Distribconf->new("$topdir/$subdir");
-            if ($d->load){
+            if ($d->load) {
                 push(@distpath, $subdir);
             }
         }
-        closedir($handle)
+        closedir($handle);
     } else {
         die "Cannot open $topdir: $!";
     }
