@@ -2,4 +2,5 @@ Carp
 Cwd
 File::Temp
 LWP::UserAgent
+Pod::Usage
 Youri::Package::RPM::Updater
