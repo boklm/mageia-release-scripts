@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use File::Temp qw/tempfile/;
+use File::Temp qw(tempfile);
 use RPM4;
 use Youri::Package::RPM::Updater;
 use LWP::UserAgent;
@@ -12,32 +12,29 @@ my $status_page = 'http://pkgsubmit.mageia.org/';
 my $svn_root = 'svn+ssh://svn.mageia.org/svn/packages/cauldron/';
 my $commit_msg = 'Distro Rebuild';
 my $bs_max_todo_queue = 5;
-my $updater = Youri::Package::RPM::Updater->new();
+my $updater = Youri::Package::RPM::Updater->new;
 
 my ($ci_fh, $ci_fname) = tempfile(UNLINK => 1);
 print $ci_fh $commit_msg;
 close $ci_fh;
 
-sub list_from_file
-{
+sub list_from_file {
     my @res = cat_($_[0]);
     chomp @res;
     return @res;
 }
 
-sub get_bs_queue_todo
-{
+sub get_bs_queue_todo() {
     my $ua = LWP::UserAgent->new;
     my $req = HTTP::Request->new(HEAD => $status_page);
     my $res = $ua->request($req);
-    return ($res->is_success) ? $res->header('X-BS-Queue-Todo') : 9999;
+    return $res->is_success ? $res->header('X-BS-Queue-Todo') : 9999;
 }
 
-sub bump_release
-{
+sub bump_release {
     my ($pkgname) = @_;
-    my $oldcwd = getcwd;
-    my $tmpdir = File::Temp->newdir();
+    my $oldcwd = getcwd();
+    my $tmpdir = File::Temp->newdir;
     chdir $tmpdir->dirname;
     system('svn', 'co', "${svn_root}/${pkgname}/current");
     chdir 'current';
@@ -46,8 +43,7 @@ sub bump_release
     chdir $oldcwd;
 }
 
-sub submit_package
-{
+sub submit_package {
     my ($pkgname) = @_;
     while (get_bs_queue_todo() > $bs_max_todo_queue) {
 	sleep 20;
@@ -55,8 +51,7 @@ sub submit_package
     system('mgarepo', 'submit', $pkgname);
 }
 
-sub rebuild_package
-{
+sub rebuild_package {
     my ($pkgname) = @_;
     bump_release $pkgname;
     submit_package $pkgname;
