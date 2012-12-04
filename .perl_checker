@@ -1,0 +1,5 @@
+Carp
+Cwd
+File::Temp
+LWP::UserAgent
+Youri::Package::RPM::Updater
