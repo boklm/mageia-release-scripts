@@ -93,7 +93,7 @@ sub print_modified_packages
 {
     my ($pkglist) = @_;
 
-    my $modpkg = modified_packages(@$pkglist);
+    my $modpkg = modified_packages($pkglist);
 
     print join "\n", sort keys %$modpkg;
     print "\n\n";
