@@ -2,11 +2,15 @@
 
 # This script takes a root SRPMS directory as argument, and print the
 # list of package names on stdout
+# As second argument, it can optionally take a file containing a list
+# of packages (as regexp) to skip
 
 use strict;
 use URPM;
+use MDK::Common;
 
 my $srpmsdir = $ARGV[0] or exit 1;
+my $skipfile = $ARGV[1];
 
 my $urpm = URPM->new;
 
@@ -17,4 +21,16 @@ foreach (glob("$srpmsdir/*/*/media_info/synthesis.hdlist.cz")) {
 my %res;
 $urpm->traverse(sub { $res{$_[0]->name} = 1 });
 
-print join("\n", sort(keys %res), '')
+my @skip = $skipfile ? chomp_(cat_($skipfile)) : ();
+my @pkgs = grep {
+              my $res = 1;
+              foreach my $skipre (@skip) {
+                  if ($_ =~ m/^$skipre$/) {
+		      $res = 0;
+		      last;
+                  }
+              }
+	      $res;
+           } (keys %res);
+
+print join("\n", sort @pkgs, '')
