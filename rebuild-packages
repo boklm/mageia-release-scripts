@@ -9,7 +9,7 @@ use Cwd;
 
 my $status_page = 'http://pkgsubmit.mageia.org/';
 my $svn_root = 'svn+ssh://svn.mageia.org/svn/packages/cauldron/';
-my $commit_msg = 'Distro Rebuild';
+my $commit_msg = 'Mass Rebuild - https://wiki.mageia.org/en/Feature:Mageia3MassRebuild';
 my $bs_max_todo_queue = 5;
 my $updater = Youri::Package::RPM::Updater->new;
 
