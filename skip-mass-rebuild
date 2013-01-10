@@ -1,0 +1,13 @@
+glibc
+binutils
+util-linux
+kernel
+kernel-.*
+kmod-.*
+dkms-.*
+virtualbox
+fglrx
+nvidia-current
+nvidia304
+nvidia174
+broacom-wl
