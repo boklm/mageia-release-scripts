@@ -59,7 +59,6 @@ svn co $svnurl/$pkgname/current pkg
 cd pkg
 sed -i 's:$oldgrp:$newgrp:' SPECS/*.spec
 svn diff
-read z
 svn ci -m 'Update group: $oldgrp -> $newgrp'
 cd /tmp
 rm -Rf \$tmpdir
