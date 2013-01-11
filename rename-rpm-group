@@ -1,0 +1,79 @@
+#!/usr/bin/perl -w
+
+# This script can be used to rename an rpm group. It takes as 1st and
+# 2nd argument the old and new group names, and will output on stdout a
+# script to do the change.
+#
+# $ ./rename-rpm-group oldgroup newgroup > rename-group-blabla.sh
+
+use strict;
+use URPM;
+use MDK::Common;
+
+exit 1 unless @ARGV == 2;
+my $oldgrp = $ARGV[0];
+my $newgrp = $ARGV[1];
+
+my @mediasdirs = (
+    '/distrib/mirror/distrib/cauldron/x86_64/media',
+    '/distrib/mirror/distrib/cauldron/i586/media',
+    '/distrib/mirror/distrib/cauldron/SRPMS/',
+);
+my $svnurl = 'svn+ssh://svn.mageia.org/svn/packages/cauldron';
+
+sub get_packages_by_group {
+    my ($groupname) = @_;
+    my $urpm = URPM->new;
+
+    foreach my $mediasdir (@mediasdirs) {
+        foreach (glob("$mediasdir/*/*/media_info/hdlist.cz")) {
+            print STDERR "parse hdlist $_\n";
+            $urpm->parse_hdlist($_);
+        }
+    }
+
+    my %res;
+    $urpm->traverse(sub { 
+            if ($_[0]->group eq $groupname) {
+                my $name;
+                if ($_[0]->sourcerpm) {
+                    $name = $_[0]->sourcerpm;
+                    $name =~ s/-([^-]+-[^-]+)$//;
+                } else {
+                    $name = $_[0]->name;
+                }
+                $res{$name} = 1;
+            }
+        });
+
+    keys %res;
+}
+
+sub print_update_group_cmd {
+    my ($pkgname, $oldgrp, $newgrp) = @_;
+    print <<EOF
+echo Updating package $pkgname
+tmpdir=\$(mktemp -d)
+cd \$tmpdir
+svn co $svnurl/$pkgname/current pkg
+cd pkg
+sed -i 's:$oldgrp:$newgrp:' SPECS/*.spec
+svn diff
+read z
+svn ci -m 'Update group: $oldgrp -> $newgrp'
+cd /tmp
+rm -Rf \$tmpdir
+
+EOF
+}
+
+print <<EOF
+#!/bin/sh
+set -e
+
+EOF
+;
+
+foreach (get_packages_by_group($oldgrp)) {
+    print_update_group_cmd($_, $oldgrp, $newgrp);
+}
