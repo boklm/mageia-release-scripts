@@ -55,9 +55,9 @@ sub print_update_group_cmd {
 echo Updating package $pkgname
 tmpdir=\$(mktemp -d)
 cd \$tmpdir
-svn co $svnurl/$pkgname/current pkg
+svn co $svnurl/$pkgname/current/SPECS pkg
 cd pkg
-sed -i 's:$oldgrp:$newgrp:' SPECS/*.spec
+sed -i 's:$oldgrp:$newgrp:' *.spec
 svn diff
 svn ci -m 'Update group: $oldgrp -> $newgrp'
 cd /tmp
