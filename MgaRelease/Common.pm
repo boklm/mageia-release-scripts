@@ -28,6 +28,7 @@ sub make_srpms_list_from_synthesis {
     $urpm->traverse(sub { 
             $srpms_list->{$_[0]->name}->{version} = $_[0]->version;
             $srpms_list->{$_[0]->name}->{release} = $_[0]->release;
+            $srpms_list->{$_[0]->name}->{epoch} = $_[0]->epoch if $_[0]->epoch;
         });
 }
 
@@ -55,7 +56,9 @@ sub get_srpms_rev {
     my $ra = SVN::Ra->new(config()->{svn_repourl});
     foreach my $pkg (keys %$srpms_list) {
         my ($ver, $rel) = @{$srpms_list->{$pkg}}{qw/version release/};
-        $svnrev = path_rev($ra, "cauldron/$pkg/releases/$ver/$rel");
+        my $epoch = $srpms_list->{$pkg}->{epoch} ?
+                $srpms_list->{$pkg}->{epoch} . ':' : '';
+        $svnrev = path_rev($ra, "cauldron/$pkg/releases/$epoch$ver/$rel");
         $srpms_list->{$pkg}->{svnrev} = $svnrev if $svnrev;
     }
 }
