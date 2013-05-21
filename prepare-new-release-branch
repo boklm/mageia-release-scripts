@@ -1,0 +1,12 @@
+#!/usr/bin/perl -w
+
+use strict;
+use FindBin;
+use lib $FindBin::Bin;
+use MgaRelease::Common;
+
+MgaRelease::Common::make_srpms_list_from_synthesis;
+MgaRelease::Common::get_srpms_rev;
+MgaRelease::Common::save_srpms_list;
+MgaRelease::Common::get_svn_branch_cmds;
+

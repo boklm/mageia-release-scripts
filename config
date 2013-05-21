@@ -1,0 +1,12 @@
+datadir: data/mga3
+srpms_list_file: srpms_list
+srpms_synthesis:
+ - /distrib/bootstrap/distrib/3/SRPMS/core/release/media_info/synthesis.hdlist.cz
+ - /distrib/bootstrap/distrib/3/SRPMS/nonfree/release/media_info/synthesis.hdlist.cz
+ - /distrib/bootstrap/distrib/3/SRPMS/tainted/release/media_info/synthesis.hdlist.cz
+svn_repourl: file:///svn/packages
+svn_branch_path: updates/3
+svn_branch_commit_msg: SILENT Branching for Mageia 3
+branch_cmds_file: branch_cmds
+nobranch_file: not_branched
+diffdir: diff
