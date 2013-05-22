@@ -33,8 +33,7 @@ sub get_packages_by_group {
     }
 
     my %res;
-    $urpm->traverse(sub { 
-            if ($_[0]->group eq $groupname) {
+    $urpm->traverse_tag('group', [ $groupname ], sub { 
                 my $name;
                 if ($_[0]->sourcerpm) {
                     $name = $_[0]->sourcerpm;
@@ -43,7 +42,6 @@ sub get_packages_by_group {
                     $name = $_[0]->name;
                 }
                 $res{$name} = 1;
-            }
         });
 
     keys %res;
