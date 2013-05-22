@@ -1,6 +1,10 @@
 Carp
 Cwd
+File::Basename
 File::Temp
 LWP::UserAgent
 Pod::Usage
+SVN::Core
+SVN::Ra
+YAML
 Youri::Package::RPM::Updater
