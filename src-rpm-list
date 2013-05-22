@@ -25,7 +25,7 @@ my @skip = $skipfile ? chomp_(cat_($skipfile)) : ();
 my @pkgs = grep {
               my $res = 1;
               foreach my $skipre (@skip) {
-                  if ($_ =~ m/^$skipre$/) {
+                  if (m/^$skipre$/) {
 		      $res = 0;
 		      last;
                   }

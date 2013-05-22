@@ -1,7 +1,7 @@
 package MgaRelease::Common;
 
 use FindBin;
-use YAML qw/LoadFile DumpFile/;
+use YAML qw(LoadFile DumpFile);
 use URPM;
 use SVN::Core;
 use SVN::Ra;
@@ -9,8 +9,8 @@ use SVN::Ra;
 my $c;
 my $srpms_list;
 
-sub config {
-    $c ? $c : $c = LoadFile($FindBin::Bin. '/config');
+sub config() {
+    $c ||= LoadFile($FindBin::Bin . '/config');
 }
 
 sub config_path {
@@ -18,7 +18,7 @@ sub config_path {
     $file =~ m|^/| ? $file : config()->{datadir} . '/' . $file;
 }
 
-sub make_srpms_list_from_synthesis {
+sub make_srpms_list_from_synthesis() {
     my $urpm = URPM->new;
     $srpms_list = {};
     foreach my $srpms_synthesis (@{config()->{srpms_synthesis}}) {
@@ -26,43 +26,42 @@ sub make_srpms_list_from_synthesis {
             or die "Error reading $srpms_synthesis\n";
     }
     $urpm->traverse(sub { 
-            $srpms_list->{$_[0]->name}->{version} = $_[0]->version;
-            $srpms_list->{$_[0]->name}->{release} = $_[0]->release;
-            $srpms_list->{$_[0]->name}->{epoch} = $_[0]->epoch;
+            $srpms_list->{$_[0]->name}{version} = $_[0]->version;
+            $srpms_list->{$_[0]->name}{release} = $_[0]->release;
+            $srpms_list->{$_[0]->name}{epoch} = $_[0]->epoch;
         });
 }
 
-sub save_srpms_list {
+sub save_srpms_list() {
     DumpFile(config_path('srpms_list_file'), $srpms_list);
 }
 
-sub load_srpms_list {
+sub load_srpms_list() {
     $srpms_list = LoadFile(config_path('srpms_list_file'), $srpms_list);
 }
 
-sub path_rev
-{
+sub path_rev {
     my ($ra, $path) = @_;
     if ($ra->check_path($path, $SVN::Core::INVALID_REVNUM)
         == $SVN::Node::none) {
         return undef;
     } else {
-        return ($ra->get_dir($path,
-                $SVN::Core::INVALID_REVNUM))[2]{'svn:entry:committed-rev'};
+	my @val = $ra->get_dir($path, $SVN::Core::INVALID_REVNUM);
+        return $val[2]{'svn:entry:committed-rev'};
     }
 }
 
-sub get_srpms_rev {
+sub get_srpms_rev() {
     my $ra = SVN::Ra->new(config()->{svn_repourl});
     foreach my $pkg (keys %$srpms_list) {
-        my ($ver, $rel, $epoch) = @{$srpms_list->{$pkg}}{qw/version release epoch/};
-        $svnrev = path_rev($ra, "cauldron/$pkg/releases/$epoch:$ver/$rel");
-        $svnrev = path_rev($ra, "cauldron/$pkg/releases/$ver/$rel") unless $svnrev;
-        $srpms_list->{$pkg}->{svnrev} = $svnrev if $svnrev;
+        my ($ver, $rel, $epoch) = @{$srpms_list->{$pkg}}{qw(version release epoch)};
+        my $svnrev = path_rev($ra, "cauldron/$pkg/releases/$epoch:$ver/$rel");
+        $svnrev ||= path_rev($ra, "cauldron/$pkg/releases/$ver/$rel");
+        $srpms_list->{$pkg}{svnrev} = $svnrev if $svnrev;
     }
 }
 
-sub get_svn_branch_cmds {
+sub get_svn_branch_cmds() {
     my $ci_msg = config()->{svn_branch_commit_msg};
     my $repo_url = config()->{svn_repourl};
     my $branch_path = config()->{svn_branch_path};
@@ -72,7 +71,7 @@ sub get_svn_branch_cmds {
         or die "Error opening " . config_path('nobranch_file') . "\n";
     print $branch "#!/bin/sh\n";
     foreach my $pkg (keys %$srpms_list) {
-        if ($srpms_list->{$pkg}->{svnrev}) {
+        if ($srpms_list->{$pkg}{svnrev}) {
             print $branch "svn cp -m '$ci_msg' $repo_url/cauldron/$pkg\@$srpms_list->{$pkg}->{svnrev} $repo_url/$branch_path/$pkg\n";
         } else {
             print $nobranch "$pkg\n";
@@ -80,18 +79,17 @@ sub get_svn_branch_cmds {
     }
 }
 
-sub get_current_diff {
+sub get_current_diff() {
     my $ra = SVN::Ra->new(config()->{svn_repourl});
-    my $ctx = SVN::Client->new();
-    my $diffdir = config_path('diffdir');
+    my $ctx = SVN::Client->new;
     my $repo_url = config()->{svn_repourl};
     foreach my $pkg (keys %$srpms_list) {
-        next unless $srpms_list->{$pkg}->{svnrev}
-                && $srpms_list->{$pkg}->{svnrev} != path_rev($ra, "cauldron/$pkg");
+        next unless $srpms_list->{$pkg}{svnrev}
+                && $srpms_list->{$pkg}{svnrev} != path_rev($ra, "cauldron/$pkg");
 
         my $difffile = config_path('diffdir') . '/' . $pkg;
         open(my $diffout, '>', $difffile) or die "Error opening file $difffile\n";
-        $ctx->diff([], "$repo_url/cauldron/$pkg/current", $srpms_list->{$pkg}->{svnrev},
+        $ctx->diff([], "$repo_url/cauldron/$pkg/current", $srpms_list->{$pkg}{svnrev},
             "$repo_url/cauldron/$pkg/current", 'HEAD', 1, 0, 0,
             $diffout, $diffout);
         close $diffout;
